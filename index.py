@@ -2,68 +2,96 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 
-def template(n_months=1, ini_day=1):
-    date = datetime.now() + relativedelta(months=-1)
-    out = ""
-    out += "\\documentclass[landscape,letterpaper]{article}\n"
-    out += "\\usepackage{calendar}\n"
-    out += "\\usepackage[landscape,margin=1cm]{geometry}\n"
-    out += "\\begin{document}\n"
-    out += "\\pagestyle{empty}"
-    out += "\\noindent"
-    out += "\\StartingDayNumber={0}\n".format(
-        str(ini_day) if (ini_day > 0 and ini_day < 8) else "1"
+class CalendarGenerator:
+  def __init__(self, num_months=1, start_day=1):
+    self.num_months = num_months
+    self.start_day = start_day
+    self.current_date = datetime.now() + relativedelta(months=-1)
+
+  def generate_calendar(self):
+    calendar_template = self._build_template()
+    return calendar_template
+
+  def _build_template(self):
+    template = "\\documentclass[landscape,letterpaper]{article}\n"
+    template += "\\usepackage{calendar}\n"
+    template += "\\usepackage[landscape,margin=1cm]{geometry}\n"
+    template += "\\begin{document}\n"
+    template += "\\pagestyle{empty}"
+    template += "\\noindent"
+    template += "\\StartingDayNumber={0}\n".format(
+        str(self.start_day) if (self.start_day >
+                                0 and self.start_day < 8) else "1"
     )
-    out += n_month(date, n_months)
-    out += "\\end{document}"
-    return out
+    template += self._generate_months(self.current_date, self.num_months)
+    template += "\\end{document}"
+    return template
 
-
-def n_month(date, nmeses):
+  def _generate_months(self, date, num_months):
     date = date + relativedelta(months=+1)
     return (
-        month(date)
-        if (nmeses == 1)
-        else f"{month(date)}\\pagebreak\n{n_month(date, nmeses-1)}"
+        self._generate_month(date)
+        if (num_months == 1)
+        else f"{self._generate_month(date)}\\pagebreak\n{self._generate_months(date, num_months-1)}"
+    )
+
+  def _generate_month(self, date):
+    month_name = date.strftime("%B")
+    year = date.strftime("%Y")
+    days_in_month = int((date + relativedelta(day=31)).strftime("%d"))
+    date = date.replace(day=1)
+    first_empty = int(date.strftime("%w"))
+    date = date.replace(day=days_in_month)
+    last_empty = 8 - int(date.strftime("%w"))
+    month_template = self._build_month_template(
+        month_name, year, days_in_month, first_empty, last_empty
+    )
+    return month_template
+
+  def _build_month_template(
+      self, month_name, year, days_in_month, first_empty, last_empty
+  ):
+    month_template = "\\begin{center}\n"
+    month_template += f"\t\\textsc{{\\LARGE {month_name}}}\\\\\n"
+    month_template += f"\t\\textsc{{\\large {year}}}\n"
+    month_template += "\\end{center}\n"
+    month_template += "\\begin{calendar}{.97\\textwidth}\n"
+    month_template += (
+        "\t"
+        + self._generate_empty_days(first_empty)
+        + "\\setcounter{calendardate}{1}\n"
+    )
+    month_template += self._generate_days(days_in_month)
+    month_template += (
+        "\t" + self._generate_empty_days(last_empty) + "\\finishCalendar\n"
+    )
+    month_template += "\\end{calendar}\n"
+    return month_template
+
+  def _generate_days(self, num_days=30):
+    return (
+        ""
+        if (num_days < 1)
+        else self._generate_day() + self._generate_days(num_days - 1)
+    )
+
+  def _generate_day(self, title="", msg="\\vspace{2cm}"):
+    return f"\t\\day{{{title}}}{{{msg}}}\n"
+
+  def _generate_empty_days(self, num_empty_days=0):
+    return (
+        ""
+        if (num_empty_days < 1)
+        else f"\\BlankDay{self._generate_empty_days(num_empty_days-1)}"
     )
 
 
-def month(date):
-    _month = date.strftime("%B")
-    _year = date.strftime("%Y")
-    days_in_month = int((date + relativedelta(day=31)).strftime("%d"))
-    #
-    date = date.replace(day=1)
-    fst_empty = int(date.strftime("%w"))
-    #
-    date = date.replace(day=days_in_month)
-    lst_empty = 8 - int(date.strftime("%w"))
-    #
-    out = ""
-    out += "\\begin{center}\n"
-    out += f"\t\\textsc{{\\LARGE {_month}}}\\\\\n"
-    out += f"\t\\textsc{{\\large {_year}}}\n"
-    out += "\\end{center}\n"
-    out += "\\begin{calendar}{.97\\textwidth}\n"
-    out += "\t" + empty(fst_empty) + "\\setcounter{calendardate}{1}\n"
-    out += n_day(days_in_month)
-    out += "\t" + empty(lst_empty) + "\\finishCalendar\n"
-    out += "\\end{calendar}\n"
-    return out
+def main():
+  calendar_generator = CalendarGenerator(12)
+  calendar_template = calendar_generator.generate_calendar()
+  with open("index.tex", "w") as file:
+    file.write(calendar_template)
 
 
-def n_day(cnt=30):
-    return "" if (cnt < 1) else day() + n_day(cnt - 1)
-
-
-def day(title="", msg="\\vspace{2cm}"):
-    return f"\t\\day{{{title}}}{{{msg}}}\n"
-
-
-def empty(cnt=0):
-    return "" if (cnt < 1) else f"\\BlankDay{empty(cnt-1)}"
-
-
-f = open("index.tex", "w")
-f.write(template(12))
-f.close()
+if __name__ == "__main__":
+  main()
