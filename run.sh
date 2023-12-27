@@ -1,5 +1,5 @@
 #!/bin/bash
-#? pip3 install python-dateutil
+#? sudo apt install python3-dateutil
 # Generate tex file
 python3 index.py
 # Compile
