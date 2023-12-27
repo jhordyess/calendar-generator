@@ -1,3 +1,4 @@
+import csv
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -6,11 +7,21 @@ class CalendarGenerator:
   def __init__(self, num_months=1, start_day=1):
     self.num_months = num_months
     self.start_day = start_day
-    self.current_date = datetime.now() + relativedelta(months=-1)
+    self.current_date = datetime.now() + relativedelta(months=0)
+    self.csv_data = self._read_csv("data.csv")
 
   def generate_calendar(self):
     calendar_template = self._build_template()
     return calendar_template
+
+  def _read_csv(self, csv_file):
+    data = {}
+    with open(csv_file, 'r') as file:
+      reader = csv.reader(file)
+      next(reader)  # Skip the header
+      for row in reader:
+        data[row[0]] = row[1]  # date is the key, title is the value
+    return data
 
   def _build_template(self):
     template = "\\documentclass[landscape,letterpaper]{article}\n"
@@ -70,10 +81,13 @@ class CalendarGenerator:
     return month_template
 
   def _generate_days(self, num_days=30, month=1, year=2020, day=1):
+    date_key = f"{year}-{int(month):02d}-{int(day):02d}"
+    title = self.csv_data.get(date_key, "")
+    msg = "\\vspace{2cm}" if (title == "") else "\\vspace{1cm}"
     return (
         ""
         if (day > num_days)
-        else self._generate_day() + self._generate_days(num_days, month, year, day+1)
+        else self._generate_day(title, msg) + self._generate_days(num_days, month, year, day+1)
     )
 
   def _generate_day(self, title="", msg="\\vspace{2cm}"):
