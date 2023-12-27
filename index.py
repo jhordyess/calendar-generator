@@ -37,6 +37,7 @@ class CalendarGenerator:
 
   def _generate_month(self, date):
     month_name = date.strftime("%B")
+    month_number = date.strftime("%m")
     year = date.strftime("%Y")
     days_in_month = int((date + relativedelta(day=31)).strftime("%d"))
     date = date.replace(day=1)
@@ -44,12 +45,12 @@ class CalendarGenerator:
     date = date.replace(day=days_in_month)
     last_empty = 8 - int(date.strftime("%w"))
     month_template = self._build_month_template(
-        month_name, year, days_in_month, first_empty, last_empty
+        month_name, year, days_in_month, first_empty, last_empty, month_number
     )
     return month_template
 
   def _build_month_template(
-      self, month_name, year, days_in_month, first_empty, last_empty
+      self, month_name, year, days_in_month, first_empty, last_empty, month_number
   ):
     month_template = "\\begin{center}\n"
     month_template += f"\t\\textsc{{\\LARGE {month_name}}}\\\\\n"
@@ -61,18 +62,18 @@ class CalendarGenerator:
         + self._generate_empty_days(first_empty)
         + "\\setcounter{calendardate}{1}\n"
     )
-    month_template += self._generate_days(days_in_month)
+    month_template += self._generate_days(days_in_month, month_number, year)
     month_template += (
         "\t" + self._generate_empty_days(last_empty) + "\\finishCalendar\n"
     )
     month_template += "\\end{calendar}\n"
     return month_template
 
-  def _generate_days(self, num_days=30):
+  def _generate_days(self, num_days=30, month=1, year=2020, day=1):
     return (
         ""
-        if (num_days < 1)
-        else self._generate_day() + self._generate_days(num_days - 1)
+        if (day > num_days)
+        else self._generate_day() + self._generate_days(num_days, month, year, day+1)
     )
 
   def _generate_day(self, title="", msg="\\vspace{2cm}"):
