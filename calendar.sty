@@ -1,7 +1,7 @@
 \NeedsTeXFormat{LaTeX2e}
 
-\def\CalendarVersion{3.2}
-\def\CalendarVersionDate{2018/09/19}
+\def\CalendarVersion{3.3}
+\def\CalendarVersionDate{2023/02/03}
 
 \ProvidesClass{calendar}[\CalendarVersionDate
            LaTeX2e class file `calendar' v\CalendarVersion]
@@ -21,14 +21,13 @@
   \vspace{2pt} % Whitespace above the heading
   \begin{minipage}[t]{0.87\hsize}
     \raggedright
-    \normalsize % Reset back to normal font size in case this is used within the \activities as a second day heading
+    \small % Small font size
     \textit{#1}
   \end{minipage}
   \begin{minipage}[t]{0.1\hsize}
     \raggedleft
     \textit{#2}
   \end{minipage}%
-  \vspace{1pt}% Whitespace below the heading
 }
 \def\activities#1{
   \parbox{\hsize}{\vspace*{5pt}\raggedright\scriptsize #1}\smallskip
@@ -67,13 +66,14 @@
   \ifnum\@currentdaynum>7\@arraycr\hline\else&\fi
   }
 \def\finishCalendar{
+  \ifnum\@currentdaynum=7 \\\hline\else
   \ifnum\@currentdaynum=6 &\\\hline\else
   \ifnum\@currentdaynum=5 &&\\\hline\else
   \ifnum\@currentdaynum=4 &&&\\\hline\else
   \ifnum\@currentdaynum=3 &&&&\\\hline\else
   \ifnum\@currentdaynum=2 &&&&&\\\hline\else
   \ifnum\@currentdaynum=1 &&&&&&\\\hline
-  \fi\fi\fi\fi\fi\fi
+  \fi\fi\fi\fi\fi\fi\fi
 }
 \def\eventskip{\\\vspace{4pt}}
   \def\BlankDay{
@@ -104,3 +104,7 @@
     \endtabularx
   \endgroup
 }
+
+\pagestyle{empty} % Disable default headers and footers
+
+\setlength{\parindent}{0pt} % Stop paragraph indentation
