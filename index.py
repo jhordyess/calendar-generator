@@ -4,10 +4,10 @@ from dateutil.relativedelta import relativedelta
 
 
 class CalendarGenerator:
-  def __init__(self, num_months=1, start_day=1):
+  def __init__(self, year=-1, num_months=12, start_day=1):
+    self.year = datetime.now().year if (year == -1) else year
     self.num_months = num_months
     self.start_day = start_day
-    self.current_date = datetime.now() + relativedelta(months=0)
     self.csv_data = self._read_csv("data.csv")
 
   def generate_calendar(self):
@@ -34,16 +34,17 @@ class CalendarGenerator:
         str(self.start_day) if (self.start_day >
                                 0 and self.start_day < 8) else "1"
     )
-    template += self._generate_months(self.current_date, self.num_months)
+    initDate = datetime(self.year, 1, 1)
+    template += self._generate_months(initDate, self.num_months)
     template += "\\end{document}"
     return template
 
   def _generate_months(self, date, num_months):
-    date = date + relativedelta(months=+1)
+    nextMonth = date + relativedelta(months=+1)
     return (
         self._generate_month(date)
         if (num_months == 1)
-        else f"{self._generate_month(date)}\\pagebreak\n{self._generate_months(date, num_months-1)}"
+        else f"{self._generate_month(date)}\\pagebreak\n{self._generate_months(nextMonth, num_months-1)}"
     )
 
   def _generate_month(self, date):
@@ -102,7 +103,8 @@ class CalendarGenerator:
 
 
 def main():
-  calendar_generator = CalendarGenerator(12)
+  year = 2025
+  calendar_generator = CalendarGenerator(year)
   calendar_template = calendar_generator.generate_calendar()
   with open("index.tex", "w") as file:
     file.write(calendar_template)
