@@ -1,5 +1,5 @@
 #!/bin/bash
-#? sudo apt install python3-dateutil
+#? sudo apt install python3-dateutil python3-jinja2
 # Generate tex file
 python3 index.py
 # Compile
