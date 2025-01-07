@@ -1,0 +1,29 @@
+\documentclass[letterpaper,11pt]{CSCalendars}
+\setcounter{startingdayoftheweek}{1}
+\setcounter{startingdate}{1}
+\setlength{\dayheight}{3cm}
+\begin{document}
+{% for month in months %}
+% Calendar header
+\begin{center}
+  \textsc{\LARGE {{ month.name }} {{ month.year }} }
+\end{center}
+
+% Calendar table
+\begin{calendar}
+{%- for day in month.days -%}
+  {%- if day.is_blank %}
+  \blankday{}
+  {%- else %}
+  \day{ {{day.title}} }{ {{day.content}} }
+  {%- endif %}
+{%- endfor %}
+\end{calendar}
+
+%--------------------------------------------
+{% if not loop.last %}
+\newpage
+\setcounter{startingdate}{1}
+{% endif %}
+{%- endfor %}
+\end{document}
