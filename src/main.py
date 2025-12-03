@@ -4,8 +4,8 @@ from dateutil.relativedelta import relativedelta
 from jinja2 import Environment, FileSystemLoader
 
 CSV_FILE = "data.csv"
-JINJA_TEMPLATE = "index.tex.jinja"
-TEX_TEMPLATE = "index.tex"
+JINJA_TEMPLATE = "template.tex.jinja"
+TEX_TEMPLATE = "generated/index.tex"
 
 
 class CalendarGenerator:
