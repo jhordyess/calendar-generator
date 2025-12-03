@@ -1,11 +1,15 @@
+from pathlib import Path
 import csv
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from jinja2 import Environment, FileSystemLoader
 
-CSV_FILE = "data.csv"
+# Full path of 'src' directory
+BASE_DIR = Path(__file__).parent
+
+CSV_FILE = BASE_DIR / "data.csv"
 JINJA_TEMPLATE = "template.tex.jinja"
-TEX_TEMPLATE = "generated/index.tex"
+TEX_TEMPLATE = BASE_DIR / "generated/index.tex"
 
 
 class CalendarGenerator:
@@ -13,7 +17,8 @@ class CalendarGenerator:
     self.year = datetime.now().year if (year == -1) else year
     self.num_months = num_months
     self.csv_data = self._read_csv(CSV_FILE)
-    self.env = Environment(loader=FileSystemLoader('.'))
+    self.env = Environment(loader=FileSystemLoader(str(BASE_DIR)))
+    TEX_TEMPLATE.parent.mkdir(parents=True, exist_ok=True)
 
   def generate_calendar(self):
     template = self.env.get_template(JINJA_TEMPLATE)
