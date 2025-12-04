@@ -6,6 +6,8 @@ from app.models import Month
 
 
 class Renderer:
+    """Render LaTeX templates with Jinja2."""
+
     def __init__(self, template_dir: Path) -> None:
         self.env = Environment(loader=FileSystemLoader(str(template_dir)))
 

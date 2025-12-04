@@ -6,11 +6,7 @@ from app.models import DayCell, Month
 
 
 class CalendarBuilder:
-    """Build month and day structures for templates.
-
-    Keeps the original calendar algorithms but isolates them from I/O and
-    rendering. Accepts an `events` dict for dependency injection.
-    """
+    """Build month and day structures for templates."""
 
     def __init__(self, year: Optional[int] = None, num_months: int = 12, is_sunday_start: bool = False, events: Optional[Dict[str, str]] = None) -> None:
         self.year = year if year is not None else datetime.now().year
