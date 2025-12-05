@@ -19,7 +19,7 @@ def main(year: Optional[int] = None, num_months: int = 12, is_monday_start: bool
 
     events = load_events(csv_path)
 
-    builder = CalendarBuilder(year=year, num_months=num_months, is_sunday_start=is_monday_start, events=events)
+    builder = CalendarBuilder(year=year, num_months=num_months, is_monday_start=is_monday_start, events=events)
     months = builder.generate()
     
     renderer = Renderer(BASE_DIR)
