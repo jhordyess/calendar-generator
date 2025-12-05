@@ -22,5 +22,6 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poe.tasks]
-start = "python src/main.py"
+gen = "python -m app.main"
+gen-pdf = "python -m app.main --compile-pdf"
 format = "autopep8 --in-place --aggressive --aggressive --max-line-length 120 **/*.py"
