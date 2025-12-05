@@ -8,11 +8,11 @@ from app.models import DayCell, Month
 class CalendarBuilder:
     """Build month and day structures for templates."""
 
-    def __init__(self, year: Optional[int] = None, num_months: int = 12, is_sunday_start: bool = False, events: Optional[Dict[str, str]] = None) -> None:
+    def __init__(self, year: Optional[int] = None, num_months: int = 12, is_monday_start: bool = False, events: Optional[Dict[str, str]] = None) -> None:
         self.year = year if year is not None else datetime.now().year
         self.num_months = num_months
         # keep existing mapping: 0=Mon start, 1=Sunday-start switch used in original
-        self.week_start_index = 0 if not is_sunday_start else 1
+        self.week_start_index = 0 if is_monday_start else 1
         self.events: Dict[str, str] = events or {}
 
     def generate(self) -> List[Month]:
